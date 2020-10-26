@@ -1,0 +1,125 @@
+<%- include('header.ejs')%>
+<link rel="stylesheet" href="style.css">
+
+<% data %>
+
+<!-- global const dataProvinsi = <% data.forEach( (data) => { %> <%= data.provinsi %> <% }) %>; -->
+
+<body>
+    <div id = "container"></div>
+            
+    <script>
+        $(document).ready(function() {
+            
+            var chart = {
+                type: 'bar'
+            };
+            var title = {
+                text: 'Informasi Data Covid-19'   
+            };
+            var subtitle = {
+                text: 'Source: John Hopkins University'  
+            };
+
+            var xAxis = {
+                    categories:[],
+                    
+                    title: {
+                        text: null
+                    }
+            };
+
+            var yAxis = {
+                min: 0,
+                title: {
+                    text: 'Kasus (satuan)',
+                    align: 'high'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            };
+            var tooltip = {
+                valueSuffix: ' orang'
+            };
+            var plotOptions = {
+                bar: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            };
+            var legend = {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                x: -40,
+                y: 100,
+                floating: true,
+                borderWidth: 3,
+                
+                backgroundColor: (
+                    (Highcharts.theme && Highcharts.theme.legendBackgroundColor) ||
+                        '#FFFFFF'),
+                shadow: true
+            };
+            var credits = {
+                enabled: false
+            };
+            
+            var series = [
+                {
+                    name: 'Kasus Positif',
+                    data: []
+                }, 
+                {
+                    name: 'Kasus Meninggal',
+                    data: []
+                }, 
+                {
+                    name: 'Kasus Sembuh',
+                    data: []      
+                }
+            ];
+
+            // get json object
+            const jsonArray = <%- JSON.stringify(data) %>;
+           
+            // push jsonarray array to object
+            // extract array value
+            function extractValue (arr, prop) { 
+                let extractedValue = [];
+
+                for (let index = 0; index < arr.length; index++) {
+                    extractedValue.push(arr[index][prop]);
+                    
+                }
+                return extractedValue;
+            }
+
+            const provinsi = extractValue(jsonArray, 'provinsi');
+            const kasusPositif = extractValue(jsonArray, 'kasusPosi');
+            const kasusMeninggal = extractValue(jsonArray, 'kasusMeni');
+            const kasusSembuh = extractValue(jsonArray, 'kasusSemb');
+            xAxis.categories = provinsi;
+            series[0].data = kasusPositif;
+            series[1].data = kasusMeninggal;
+            series[2].data = kasusSembuh;
+            
+            console.log(xAxis.categories, series);
+
+            var json = {};   
+            json.chart = chart; 
+            json.title = title;   
+            json.subtitle = subtitle; 
+            json.tooltip = tooltip;
+            json.xAxis = xAxis;
+            json.yAxis = yAxis;  
+            json.series = series;
+            json.plotOptions = plotOptions;
+            json.legend = legend;
+            json.credits = credits;
+            $('#container').highcharts(json);
+        });
+    </script>
+</body>
